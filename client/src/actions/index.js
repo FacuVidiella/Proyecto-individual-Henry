@@ -3,6 +3,7 @@ export const ADD_VIDEOGAME = 'AddVideogame';
 export const GET_VIDEOGAMES = 'GetVideogames';
 export const GET_DETAILS = 'GetDetails';
 export const GET_BY_NAME = 'GetByName';
+export const FILTER_BY_RATING = 'GetByRating';
 
 export function addGames(game){
     return(dispatch) => {

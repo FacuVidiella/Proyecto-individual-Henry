@@ -17,11 +17,7 @@ const router = Router();
 // Ejemplo: router.use('/auth', authRouter);
 
 
-router.get('/videogames',  async (req, res) =>{
-    
-    
-    
-    
+router.get('/videogames', async (req, res) =>{
         try{
             let response = await axios.get(`https://api.rawg.io/api/games?key=${DB_KEY}`);
             var result = response.data.results;
@@ -44,7 +40,7 @@ router.get('/videogames',  async (req, res) =>{
             });
             result5.forEach(p => {
                 result.push(p)
-            });
+            });           
             if(!req.query.name){
                 result.push(await Videogame.findAll())
                 result = result.map(p => {

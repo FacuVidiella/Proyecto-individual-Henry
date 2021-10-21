@@ -3,8 +3,8 @@ import React from "react";
 export default function Paging ({gamesPerPage, allGames, paginado}){
     const pages = [];
 
-    for(let i = 0; i<=Math.ceil(allGames/gamesPerPage); i++){
-        pages.push(i+1);
+    for(let i = 0; i<=6; i++){
+        pages.push(i);
     }
     
     return(

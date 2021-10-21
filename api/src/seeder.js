@@ -1,7 +1,7 @@
 const axios  = require('axios');
 require('dotenv').config();
 const { DB_KEY } = process.env;
-const { Genre, Videogame } = require ('./db.js')
+const { Genre } = require ('./db.js')
 
 
 var genreSeed = async function(){

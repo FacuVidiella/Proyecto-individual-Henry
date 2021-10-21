@@ -11,13 +11,30 @@ export function Home(){
     const allGames = useSelector((state) => state.videogames);
     const [currentPage, setCurrentPage] = useState(0);
     const [gamesPerPage, setGamesPerPage] = useState(15);
-    const finalGameIndex = currentPage + gamesPerPage;
-    const indexOfFirst = finalGameIndex - gamesPerPage;
+    var finalGameIndex = currentPage + gamesPerPage;
+    var indexOfFirst = finalGameIndex - gamesPerPage;
+    if(currentPage===1){
+        finalGameIndex = 31
+        indexOfFirst = 16
+    } else if (currentPage===2){
+        finalGameIndex = 47
+        indexOfFirst = 32
+    } else if (currentPage === 3){
+        finalGameIndex = 63
+        indexOfFirst = 48
+    } else if (currentPage === 4){
+        finalGameIndex = 79
+        indexOfFirst = 64
+    } else if (currentPage === 5){
+        finalGameIndex = 95
+        indexOfFirst = 80
+    } else if (currentPage === 6) {
+        finalGameIndex = 106
+        indexOfFirst = 96
+    }
     const currentGames = allGames.slice(indexOfFirst, finalGameIndex);
-    console.log(currentGames)
-    console.log(allGames.length)
+   
     
-
     const paginado = (pages) => {
         setCurrentPage(pages)
     }
@@ -35,7 +52,7 @@ export function Home(){
     return(
         <div>
             <Link to='/videogame'>Create Game</Link>
-            <h1>All Games</h1>
+            <h1>Videogames</h1>
             <button onClick={e =>{handleClick(e)}}> reload games </button>
             <>
                 <select>
