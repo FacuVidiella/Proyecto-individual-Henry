@@ -1,4 +1,4 @@
-const { Router } = require('express');
+const { Router, request } = require('express');
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 const { Genre, Videogame } = require('../db.js');
@@ -22,39 +22,46 @@ router.get('/videogames', async (req, res) =>{
             let response = await axios.get(`https://api.rawg.io/api/games?key=${DB_KEY}`);
             var result = response.data.results;
             let response2 = await axios.get(`https://api.rawg.io/api/games?key=${DB_KEY}&page=2`);
-            let result2 = response2.data.results;
+            response2.data.results.forEach( p => {
+                result.push(p)
+            });
             let response3 = await axios.get(`https://api.rawg.io/api/games?key=${DB_KEY}&page=3`);
-            let result3 = response3.data.results;
+            response3.data.results.forEach(p => {
+                result.push(p)
+            });
             let response4 = await axios.get(`https://api.rawg.io/api/games?key=${DB_KEY}&page=4`);
-            let result4 = response4.data.results;
+            response4.data.results.forEach(p => {
+                result.push(p)
+            });
             let response5 = await axios.get(`https://api.rawg.io/api/games?key=${DB_KEY}&page=5`);
-            let result5 = response5.data.results;
-            result2.forEach(p => {
+            response5.data.results.forEach(p => {
                 result.push(p)
             });
-            result3.forEach(p => {
-                result.push(p)
-            });
-            result4.forEach(p => {
-                result.push(p)
-            });
-            result5.forEach(p => {
-                result.push(p)
-            });           
+           
+            
             if(!req.query.name){
-                result.push(await Videogame.findAll())
+                let allGames = await Videogame.findAll({
+                    include: 'Genres'
+                })
+                if(allGames && allGames.length)result = result.concat(allGames?.map(m => m.dataValues))
+                console.log(allGames)
                 result = result.map(p => {
                     return {
+                        id: p.id,
                         name: p.name,
                         background_image: p.background_image,
-                        genres: p.genres
+                        genres: p.genres,
+                        rating: p.rating
                     }
                 }) 
-            }else{
+                
+            } else {
                 let nameNormalized = req.query.name.toLowerCase();
                 const gameBd = await Videogame.findAll({
-                    where: {name: {[Op.iLike]: '%' + nameNormalized + '%'}}
+                    where: {name: {[Op.iLike]: '%' + nameNormalized + '%'}},
+                    include: 'Genres'
                 })
+                console.log(gameBd)
                 let private = gameBd.map(p => 
                     p.dataValues
                 );
@@ -85,12 +92,15 @@ router.get('/videogame/:idVideogame', async(req, res) => {
     const {idVideogame} = req.params;
     let resultado;
     if(idVideogame.length > 6){
-        let gameInBd = await Videogame.findByPk(idVideogame);
-        let { name, background_image, genres, description, releaseDate, rating, platforms} = gameInBd.dataValues;
+        let gameInBd = await Videogame.findByPk(idVideogame,{
+            include: 'Genres'
+        });
+        console.log(gameInBd)
+        let { name, background_image, description, releaseDate, rating, platforms} = gameInBd.dataValues;
          resultado = {
             name,
             background_image,
-            genres,
+            genres: gameInBd.Genres,
             description,
             releaseDate,
             rating,
@@ -128,19 +138,28 @@ router.get('/genres', async(req, res) =>{
 })
 
 router.post('/videogame', async(req, res) =>{
-    const { name, description, releaseDate, rating, platforms} = req.body;
-    try{
+    const { name, description, releaseDate, rating, platforms, genres} = req.body;
+    console.log(genres)
+    let platforms1 = platforms.join(' ')
     const newVideogame = await Videogame.create({
         name,
         description,
         releaseDate,
         rating,
-        platforms,
+        platforms: platforms1,
     })
+    
+    let gen = genres.map(m => Genre.findOne({
+        where: {name: m},
+        attributes: ['id']
+    }));
+    gen = await Promise.all(gen)
+    
+    gen.forEach(e => newVideogame.addGenres(e.dataValues.id, newVideogame.dataValues.id))
+    
     res.status(200).json(newVideogame);
-    } catch (error){
-        res.status(404).send(error)
-    }
+    
+    
     
 })
 

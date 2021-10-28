@@ -6,6 +6,8 @@ import LandingPage from './components/LandingPage.jsx';
 import Home from './components/Home';
 
 import AddGame from './components/AddGame';
+import GameDetails from './components/GameDetails';
+
 
 function App() {
   return (
@@ -13,8 +15,9 @@ function App() {
     <div className="App">
       <Switch>
       <Route exact path= '/' component={LandingPage}/>
-      <Route path='/videogames' component={Home}/>
-      <Route path= '/videogame' component={AddGame}/>
+      <Route path='/videogames' component={Home} />
+      <Route exact path= '/videogame' component={AddGame}/>
+      <Route path= '/videogame/:id' component={GameDetails}/>
       </Switch>
     </div>
     </BrowserRouter>
